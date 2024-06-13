@@ -104,7 +104,7 @@ internal fun Day(
                 .fillMaxSize()
                 .wrapContentSize()
                 .clearAndSetSemantics { },
-            style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }

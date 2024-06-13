@@ -19,12 +19,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.loong.android.event.ui.calendar.Calendar
+import com.loong.android.event.ui.calendar.model.CalendarState
 import com.loong.android.event.ui.theme.EventTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,6 +36,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EventTheme {
+                Scaffold {
+                    Calendar(CalendarState()) {
+
+                    }
+                }
             }
         }
     }

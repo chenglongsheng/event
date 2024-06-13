@@ -1,42 +1,45 @@
 package com.loong.android.event.ui.calendar.model
 
 import androidx.compose.runtime.mutableStateOf
-import com.loong.android.event.util.getNumberWeeks
+import com.loong.android.event.util.getWeekNumber
 import java.time.LocalDate
 import java.time.Period
 import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 
+/**
+ * 日历状态
+ */
 class CalendarState {
 
     val calendarUiState = mutableStateOf(CalendarUiState())
     val listMonths: List<Month>
 
-    // Defaulting to starting at 1/01 of current year
-    private val calendarStartDate: LocalDate = LocalDate.now()
-        .withMonth(1).withDayOfMonth(1)
+    /**
+     * 开始到结束时期
+     */
+    private val periodBetweenCalendarStartEnd = Period.between(START_LOCAL_DATE, END_LOCAL_DATE)
 
-    // Defaulting to 2 years from current date.
-    private val calendarEndDate: LocalDate = LocalDate.now().plusYears(2)
-        .withMonth(12).withDayOfMonth(31)
+    /**
+     * 今天
+     */
+    val today: LocalDate
+        get() = LocalDate.now()
 
-    private val periodBetweenCalendarStartEnd: Period = Period.between(
-        calendarStartDate,
-        calendarEndDate
-    )
+    /**
+     * 距 START_LOCAL_DATE 至今的月
+     */
+    val monthFromStart: Long
+        get() = ChronoUnit.MONTHS.between(START_LOCAL_DATE, today)
 
     init {
         val tempListMonths = mutableListOf<Month>()
-        var startYearMonth = YearMonth.from(calendarStartDate)
+        var startYearMonth = YearMonth.from(START_LOCAL_DATE)
         for (numberMonth in 0..periodBetweenCalendarStartEnd.toTotalMonths()) {
-            val numberWeeks = startYearMonth.getNumberWeeks()
+            val numberWeeks = startYearMonth.getWeekNumber()
             val listWeekItems = mutableListOf<Week>()
             for (week in 0 until numberWeeks) {
-                listWeekItems.add(
-                    Week(
-                        number = week,
-                        yearMonth = startYearMonth
-                    )
-                )
+                listWeekItems.add(Week(week, startYearMonth))
             }
             val month = Month(startYearMonth, listWeekItems)
             tempListMonths.add(month)
@@ -45,58 +48,17 @@ class CalendarState {
         listMonths = tempListMonths.toList()
     }
 
-    fun setSelectedDay(newDate: LocalDate) {
-        calendarUiState.value = updateSelectedDay(newDate)
-    }
-
-    private fun updateSelectedDay(newDate: LocalDate): CalendarUiState {
-        val currentState = calendarUiState.value
-        val selectedStartDate = currentState.selectedStartDate
-        val selectedEndDate = currentState.selectedEndDate
-
-        return when {
-            selectedStartDate == null && selectedEndDate == null -> {
-                currentState.setDates(newDate, null)
-            }
-            selectedStartDate != null && selectedEndDate != null -> {
-                val animationDirection = if (newDate.isBefore(selectedStartDate)) {
-                    AnimationDirection.BACKWARDS
-                } else {
-                    AnimationDirection.FORWARDS
-                }
-                this.calendarUiState.value = currentState.copy(
-                    selectedStartDate = null,
-                    selectedEndDate = null,
-                    animateDirection = animationDirection
-                )
-                updateSelectedDay(newDate = newDate)
-            }
-            selectedStartDate == null -> {
-                if (newDate.isBefore(selectedEndDate)) {
-                    currentState.copy(animateDirection = AnimationDirection.BACKWARDS)
-                        .setDates(newDate, selectedEndDate)
-                } else if (newDate.isAfter(selectedEndDate)) {
-                    currentState.copy(animateDirection = AnimationDirection.FORWARDS)
-                        .setDates(selectedEndDate, newDate)
-                } else {
-                    currentState
-                }
-            }
-            else -> {
-                if (newDate.isBefore(selectedStartDate)) {
-                    currentState.copy(animateDirection = AnimationDirection.BACKWARDS)
-                        .setDates(newDate, selectedStartDate)
-                } else if (newDate.isAfter(selectedStartDate)) {
-                    currentState.copy(animateDirection = AnimationDirection.FORWARDS)
-                        .setDates(selectedStartDate, newDate)
-                } else {
-                    currentState
-                }
-            }
-        }
-    }
-
     companion object {
         const val DAYS_IN_WEEK = 7
+
+        /**
+         * 日历开始日期
+         */
+        val START_LOCAL_DATE: LocalDate = LocalDate.of(1901, 1, 1)
+
+        /**
+         * 日历结束日期
+         */
+        val END_LOCAL_DATE: LocalDate = LocalDate.of(2099, 12, 31)
     }
 }

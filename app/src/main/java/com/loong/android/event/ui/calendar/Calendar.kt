@@ -29,9 +29,6 @@ import com.loong.android.event.ui.theme.EventTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
-import java.time.temporal.WeekFields
-
-val CALENDAR_STARTS_ON: WeekFields = WeekFields.ISO
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,42 +44,17 @@ fun Calendar(
         Animatable(0f)
     }
 
-    val pagerState = rememberPagerState(pageCount = {
-        10
-    })
+    val pagerState = rememberPagerState(
+        initialPage = calendarState.monthFromStart.toInt(),
+        pageCount = { calendarState.listMonths.size }
+    )
 
     HorizontalPager(state = pagerState) {
         LazyColumn {
-
+            val month = calendarState.listMonths[it]
+            itemsCalendarMonth(calendarUiState, onDayClick, { selectedAnimationPercentage.value }, month)
         }
     }
-
-    LaunchedEffect(numberSelectedDays) {
-        if (calendarUiState.hasSelectedDates) {
-
-            val animationSpec: TweenSpec<Float> = tween(
-                durationMillis =
-                (numberSelectedDays.coerceAtLeast(0) * DURATION_MILLIS_PER_DAY)
-                    .coerceAtMost(2000),
-                easing = EaseOutQuart
-            )
-            selectedAnimationPercentage.animateTo(
-                targetValue = 1f,
-                animationSpec = animationSpec
-            )
-        }
-    }
-
-    LazyColumn(
-        modifier = modifier.consumeWindowInsets(contentPadding), contentPadding = contentPadding
-    ) {
-        calendarState.listMonths.forEach { month ->
-            itemsCalendarMonth(
-                calendarUiState, onDayClick, { selectedAnimationPercentage.value }, month
-            )
-        }
-    }
-
 }
 
 private fun LazyListScope.itemsCalendarMonth(
