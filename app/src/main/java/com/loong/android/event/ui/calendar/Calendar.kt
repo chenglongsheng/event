@@ -1,12 +1,7 @@
 package com.loong.android.event.ui.calendar
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseOutQuart
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -16,8 +11,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,9 +19,7 @@ import com.loong.android.event.ui.calendar.model.CalendarState
 import com.loong.android.event.ui.calendar.model.CalendarUiState
 import com.loong.android.event.ui.calendar.model.Month
 import com.loong.android.event.ui.theme.EventTheme
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,10 +30,6 @@ fun Calendar(
     onDayClick: (date: LocalDate) -> Unit,
 ) {
     val calendarUiState = calendarState.calendarUiState.value
-    val numberSelectedDays = calendarUiState.numberSelectedDays.toInt()
-    val selectedAnimationPercentage = remember(numberSelectedDays) {
-        Animatable(0f)
-    }
 
     val pagerState = rememberPagerState(
         initialPage = calendarState.monthFromStart.toInt(),
@@ -52,7 +39,7 @@ fun Calendar(
     HorizontalPager(state = pagerState) {
         LazyColumn {
             val month = calendarState.listMonths[it]
-            itemsCalendarMonth(calendarUiState, onDayClick, { selectedAnimationPercentage.value }, month)
+            itemsCalendarMonth(calendarUiState, onDayClick, month)
         }
     }
 }
@@ -60,7 +47,6 @@ fun Calendar(
 private fun LazyListScope.itemsCalendarMonth(
     calendarUiState: CalendarUiState,
     onDayClicked: (LocalDate) -> Unit,
-    selectedPercentageProvider: () -> Float,
     month: Month
 ) {
     item(month.yearMonth.month.name + month.yearMonth.year + "header") {
@@ -85,26 +71,14 @@ private fun LazyListScope.itemsCalendarMonth(
     itemsIndexed(month.weeks, key = { index, _ ->
         month.yearMonth.year.toString() + "/" + month.yearMonth.month.value + "/" + (index + 1).toString()
     }) { _, week ->
-        val beginningWeek = week.yearMonth.atDay(1).plusWeeks(week.number.toLong())
-        val currentDay = beginningWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-
-        if (calendarUiState.hasSelectedPeriodOverlap(
-                currentDay, currentDay.plusDays(6)
-            )
-        ) {
-            WeekSelectionPill(
-                state = calendarUiState,
-                currentWeekStart = currentDay,
-                widthPerDay = CELL_SIZE,
-                week = week,
-                selectedPercentageTotalProvider = selectedPercentageProvider
-            )
-        }
         Week(
             calendarUiState = calendarUiState,
             modifier = contentModifier,
             week = week,
-            onDayClicked = onDayClicked
+            onDayClicked = {
+                calendarUiState.selectedDate = it
+                onDayClicked(it)
+            }
         )
 //        Spacer(Modifier.height(8.dp))
     }

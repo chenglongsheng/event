@@ -19,7 +19,7 @@ import java.time.temporal.TemporalAdjusters
 internal fun DaysOfWeek(modifier: Modifier = Modifier) {
     Row(modifier = modifier.clearAndSetSemantics { }) {
         for (day in DayOfWeek.entries) {
-            DayOfWeekHeading(day = day.name.take(1))
+            DayOfWeekHeading(day = day.name.take(3))
         }
     }
 }
@@ -34,32 +34,29 @@ internal fun Week(
     val beginningWeek = week.yearMonth.atDay(1).plusWeeks(week.number.toLong())
     var currentDay = beginningWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-    Box {
-        Row(modifier = modifier) {
-            Spacer(
-                Modifier
-                    .weight(1f)
-                    .heightIn(max = CELL_SIZE)
-            )
-            for (i in 0..6) {
-                if (currentDay.month == week.yearMonth.month) {
-                    Day(
-                        calendarState = calendarUiState,
-                        day = currentDay,
-                        onDayClicked = onDayClicked,
-                        month = week.yearMonth
-                    )
-                } else {
-                    Box(modifier = Modifier.size(CELL_SIZE))
-                }
-                currentDay = currentDay.plusDays(1)
+    Row(modifier = modifier) {
+        Spacer(
+            Modifier
+                .weight(1f)
+                .heightIn(max = CELL_SIZE)
+        )
+        for (i in 0..6) {
+            if (currentDay.month == week.yearMonth.month) {
+                Day(
+                    calendarState = calendarUiState,
+                    day = currentDay,
+                    onDayClicked = onDayClicked
+                )
+            } else {
+                Box(modifier = Modifier.size(CELL_SIZE))
             }
-            Spacer(
-                Modifier
-                    .weight(1f)
-                    .heightIn(max = CELL_SIZE)
-            )
+            currentDay = currentDay.plusDays(1)
         }
+        Spacer(
+            Modifier
+                .weight(1f)
+                .heightIn(max = CELL_SIZE)
+        )
     }
 }
 
