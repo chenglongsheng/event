@@ -2,24 +2,29 @@ package com.loong.android.event.ui.calendar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.loong.android.event.ui.calendar.model.CalendarState
-import com.loong.android.event.ui.calendar.model.CalendarUiState
-import com.loong.android.event.ui.calendar.model.Month
 import com.loong.android.event.ui.theme.EventTheme
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -29,58 +34,66 @@ fun Calendar(
     contentPadding: PaddingValues = PaddingValues(),
     onDayClick: (date: LocalDate) -> Unit,
 ) {
-    val calendarUiState = calendarState.calendarUiState.value
+    var calendarUiState by remember { calendarState.calendarUiState }
 
     val pagerState = rememberPagerState(
-        initialPage = calendarState.monthFromStart.toInt(),
-        pageCount = { calendarState.listMonths.size }
+        initialPage = calendarState.monthFromStart,
+        pageCount = { calendarState.totalMonthSize }
     )
 
-    HorizontalPager(state = pagerState) {
+    HorizontalPager(state = pagerState) { pageIndex ->
         LazyColumn {
-            val month = calendarState.listMonths[it]
-            itemsCalendarMonth(calendarUiState, onDayClick, month)
+            val month = calendarState.monthList[pageIndex]
+            val yearMonth = month.yearMonth
+            item("month header $yearMonth") {
+                MonthHeader(
+                    month = yearMonth.monthValue.toString(),
+                    year = yearMonth.year.toString(),
+                    Modifier.padding(start = 32.dp, end = 32.dp, top = 32.dp)
+                )
+            }
+            item("week header $yearMonth") {
+                WeekHeader()
+            }
+            itemsIndexed(
+                month.weeks,
+                key = { index, _ -> "week ${index + 1} of $yearMonth" }) { index, weeks ->
+                Row {
+                    weeks.forEach {
+                        Day(day = it, calendarState = calendarUiState, onDayClicked = {})
+                    }
+                }
+            }
         }
     }
 }
 
-private fun LazyListScope.itemsCalendarMonth(
-    calendarUiState: CalendarUiState,
-    onDayClicked: (LocalDate) -> Unit,
-    month: Month
-) {
-    item(month.yearMonth.month.name + month.yearMonth.year + "header") {
-        MonthHeader(
-            modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 32.dp),
-            month = month.yearMonth.month.name,
-            year = month.yearMonth.year.toString()
+/**
+ * 月标头
+ */
+@Composable
+fun MonthHeader(month: String, year: String, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.clearAndSetSemantics { }) {
+        Text(
+            text = month,
+            modifier.weight(1f),
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(
+            text = year,
+            modifier = modifier.align(Alignment.CenterVertically),
+            style = MaterialTheme.typography.titleSmall
         )
     }
+}
 
-    // Expanding width and centering horizontally
-    val contentModifier = Modifier
-        .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally)
-    item(month.yearMonth.month.name + month.yearMonth.year + "daysOfWeek") {
-        DaysOfWeek(modifier = contentModifier)
-    }
-
-    // A custom key needs to be given to these items so that they can be found in tests that
-    // need scrolling. The format of the key is ${year/month/weekNumber}. Thus,
-    // the key for the fourth week of December 2020 is "2020/12/4"
-    itemsIndexed(month.weeks, key = { index, _ ->
-        month.yearMonth.year.toString() + "/" + month.yearMonth.month.value + "/" + (index + 1).toString()
-    }) { _, week ->
-        Week(
-            calendarUiState = calendarUiState,
-            modifier = contentModifier,
-            week = week,
-            onDayClicked = {
-                calendarUiState.selectedDate = it
-                onDayClicked(it)
-            }
-        )
-//        Spacer(Modifier.height(8.dp))
+@Composable
+fun WeekHeader(modifier: Modifier = Modifier) {
+    Row {
+        DayOfWeek.entries.forEach {
+            val name = it.getDisplayName(TextStyle.NARROW, Locale.getDefault())
+            DayOfWeekHeading(name)
+        }
     }
 }
 

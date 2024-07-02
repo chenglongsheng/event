@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.loong.android.event.R
 import com.loong.android.event.ui.calendar.model.CalendarUiState
 import java.time.LocalDate
@@ -38,7 +39,7 @@ private fun DayContainer(
     )
 
     Box(modifier = modifier
-        .size(width = CELL_SIZE, height = CELL_SIZE)
+        .size(width = 48.dp, height = 48.dp)
         .background(backgroundColor)
         .clickable(
             enabled = enabled, onClickLabel = onClickLabel, onClick = onClick
@@ -80,7 +81,7 @@ internal fun Day(
     onDayClicked: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val selected = calendarState.selectedDate == day
+    val selected = false
     val backgroundColor = if (selected) {
         MaterialTheme.colorScheme.primary
     } else {

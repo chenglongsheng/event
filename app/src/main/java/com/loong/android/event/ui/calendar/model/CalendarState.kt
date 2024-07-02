@@ -1,7 +1,7 @@
 package com.loong.android.event.ui.calendar.model
 
 import androidx.compose.runtime.mutableStateOf
-import com.loong.android.event.util.getWeekNumber
+import com.loong.android.event.util.getMonthWeeks
 import java.time.LocalDate
 import java.time.Period
 import java.time.YearMonth
@@ -13,12 +13,8 @@ import java.time.temporal.ChronoUnit
 class CalendarState {
 
     val calendarUiState = mutableStateOf(CalendarUiState())
-    val listMonths: List<Month>
 
-    /**
-     * 开始到结束时期
-     */
-    private val periodBetweenCalendarStartEnd = Period.between(START_LOCAL_DATE, END_LOCAL_DATE)
+    val monthList: List<Month>
 
     /**
      * 今天
@@ -29,28 +25,28 @@ class CalendarState {
     /**
      * 距 START_LOCAL_DATE 至今的月
      */
-    val monthFromStart: Long
-        get() = ChronoUnit.MONTHS.between(START_LOCAL_DATE, today)
+    val monthFromStart: Int
+        get() = ChronoUnit.MONTHS.between(START_LOCAL_DATE, today).toInt()
+
+    /**
+     * 总共的月数
+     */
+    val totalMonthSize: Int
 
     init {
-        val tempListMonths = mutableListOf<Month>()
-        var startYearMonth = YearMonth.from(START_LOCAL_DATE)
-        for (numberMonth in 0..periodBetweenCalendarStartEnd.toTotalMonths()) {
-            val numberWeeks = startYearMonth.getWeekNumber()
-            val listWeekItems = mutableListOf<Week>()
-            for (week in 0 until numberWeeks) {
-                listWeekItems.add(Week(week, startYearMonth))
-            }
-            val month = Month(startYearMonth, listWeekItems)
-            tempListMonths.add(month)
-            startYearMonth = startYearMonth.plusMonths(1)
+        val totalMonths = Period.between(START_LOCAL_DATE, END_LOCAL_DATE).toTotalMonths()
+        totalMonthSize = totalMonths.toInt() + 1
+        val tempMonthList = mutableListOf<Month>()
+        var startDayOfMonth: YearMonth = YearMonth.from(START_LOCAL_DATE)
+        for (i in 0 until totalMonthSize) {
+            val month = Month(startDayOfMonth, startDayOfMonth.getMonthWeeks())
+            tempMonthList.add(month)
+            startDayOfMonth = startDayOfMonth.plusMonths(1)
         }
-        listMonths = tempListMonths.toList()
+        monthList = tempMonthList
     }
 
     companion object {
-        const val DAYS_IN_WEEK = 7
-
         /**
          * 日历开始日期
          */
