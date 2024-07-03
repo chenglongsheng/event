@@ -21,7 +21,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.loong.android.event.R
-import com.loong.android.event.ui.calendar.model.CalendarUiState
 import java.time.LocalDate
 
 @Composable
@@ -41,9 +40,7 @@ private fun DayContainer(
     Box(modifier = modifier
         .size(width = 48.dp, height = 48.dp)
         .background(backgroundColor)
-        .clickable(
-            enabled = enabled, onClickLabel = onClickLabel, onClick = onClick
-        )
+        .clickable(enabled = enabled, onClickLabel = onClickLabel, onClick = onClick)
         .semantics(mergeDescendants = true) {
             stateDescription = stateDescriptionLabel
         }) {
@@ -76,10 +73,9 @@ internal fun DayOfWeekHeading(day: String) {
  */
 @Composable
 internal fun Day(
+    modifier: Modifier = Modifier,
     day: LocalDate,
-    calendarState: CalendarUiState,
     onDayClicked: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val selected = false
     val backgroundColor = if (selected) {

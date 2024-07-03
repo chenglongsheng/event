@@ -3,7 +3,9 @@ package com.loong.android.event.ui.calendar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -41,8 +43,8 @@ fun Calendar(
         pageCount = { calendarState.totalMonthSize }
     )
 
-    HorizontalPager(state = pagerState) { pageIndex ->
-        LazyColumn {
+    HorizontalPager(state = pagerState, contentPadding = contentPadding) { pageIndex ->
+        LazyColumn(userScrollEnabled = false) {
             val month = calendarState.monthList[pageIndex]
             val yearMonth = month.yearMonth
             item("month header $yearMonth") {
@@ -57,11 +59,18 @@ fun Calendar(
             }
             itemsIndexed(
                 month.weeks,
-                key = { index, _ -> "week ${index + 1} of $yearMonth" }) { index, weeks ->
+                key = { index, _ -> "week ${index + 1} of $yearMonth" }) { _, weeks ->
                 Row {
-                    weeks.forEach {
-                        Day(day = it, calendarState = calendarUiState, onDayClicked = {})
+                    val space = Modifier
+                        .weight(1f)
+                        .width(48.dp)
+                    Spacer(modifier = space)
+                    weeks.forEach { date ->
+                        Day(day = date) {
+                            calendarUiState = calendarUiState.copy(selectDate = it)
+                        }
                     }
+                    Spacer(modifier = space)
                 }
             }
         }
@@ -74,9 +83,11 @@ fun Calendar(
 @Composable
 fun MonthHeader(month: String, year: String, modifier: Modifier = Modifier) {
     Row(modifier = modifier.clearAndSetSemantics { }) {
+        Spacer(modifier = Modifier
+            .width(48.dp)
+            .weight(1f))
         Text(
             text = month,
-            modifier.weight(1f),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
@@ -90,10 +101,15 @@ fun MonthHeader(month: String, year: String, modifier: Modifier = Modifier) {
 @Composable
 fun WeekHeader(modifier: Modifier = Modifier) {
     Row {
+        val space = Modifier
+            .weight(1f)
+            .width(48.dp)
+        Spacer(modifier = space)
         DayOfWeek.entries.forEach {
             val name = it.getDisplayName(TextStyle.NARROW, Locale.getDefault())
             DayOfWeekHeading(name)
         }
+        Spacer(modifier = space)
     }
 }
 
