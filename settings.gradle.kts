@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "event"
 include(":app")
- 
+include(":database")
