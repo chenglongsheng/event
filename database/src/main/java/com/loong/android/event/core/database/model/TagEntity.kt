@@ -17,6 +17,9 @@ data class TagEntity(
     @ColumnInfo("tag_name")
     val tagName: String,
 
+    @ColumnInfo("tag_color")
+    val tagColor: Int,
+
     @ColumnInfo("create_time")
     val createTime: Instant
 )
