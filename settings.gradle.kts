@@ -20,5 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "event"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 include(":database")
