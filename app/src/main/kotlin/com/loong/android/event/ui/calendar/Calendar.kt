@@ -68,6 +68,7 @@ fun Calendar(
                     weeks.forEach { date ->
                         Day(day = date) {
                             calendarUiState = calendarUiState.copy(selectDate = it)
+                            onDayClick(it)
                         }
                     }
                     Spacer(modifier = space)

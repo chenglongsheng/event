@@ -1,4 +1,4 @@
-package com.loong.android.event.ui.edit
+package com.loong.android.event.ui.note
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun EditScreen(modifier: Modifier = Modifier) {
+fun NoteScreen(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
 
     BasicTextField(
@@ -45,6 +45,6 @@ fun EditScreen(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-private fun EditScreenPreview() {
-    EditScreen()
+private fun NoteScreenPreview() {
+    NoteScreen()
 }
