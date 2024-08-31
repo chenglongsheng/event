@@ -1,18 +1,18 @@
-package com.loong.android.event.core.database
+package com.loong.android.event.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.loong.android.event.core.database.dao.NoteDao
-import com.loong.android.event.core.database.dao.NotebookDao
-import com.loong.android.event.core.database.dao.TagDao
-import com.loong.android.event.core.database.model.NoteEntity
-import com.loong.android.event.core.database.model.NoteTagCrossRefEntity
-import com.loong.android.event.core.database.model.NotebookEntity
-import com.loong.android.event.core.database.model.TagEntity
-import com.loong.android.event.core.database.util.InstantConverter
+import com.loong.android.event.database.dao.NoteDao
+import com.loong.android.event.database.dao.NotebookDao
+import com.loong.android.event.database.dao.TagDao
+import com.loong.android.event.database.model.NoteEntity
+import com.loong.android.event.database.model.NoteTagCrossRefEntity
+import com.loong.android.event.database.model.NotebookEntity
+import com.loong.android.event.database.model.TagEntity
+import com.loong.android.event.database.util.InstantConverter
 
 @Database(
     entities = [

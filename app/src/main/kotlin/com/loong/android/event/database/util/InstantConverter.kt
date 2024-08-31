@@ -1,4 +1,4 @@
-package com.loong.android.event.core.database.util
+package com.loong.android.event.database.util
 
 import androidx.room.TypeConverter
 import kotlinx.datetime.Instant

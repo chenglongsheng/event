@@ -1,12 +1,12 @@
-package com.loong.android.event.core.database.dao
+package com.loong.android.event.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.loong.android.event.core.database.model.NoteEntity
-import com.loong.android.event.core.database.model.TagEntity
+import com.loong.android.event.database.model.NoteEntity
+import com.loong.android.event.database.model.TagEntity
 
 @Dao
 interface TagDao {

@@ -1,4 +1,4 @@
-package com.loong.android.event.core.database.model
+package com.loong.android.event.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
