@@ -41,6 +41,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@Composable
+fun NoteScreen(modifier: Modifier = Modifier, backAction: () -> Unit) {
+    RichTextEditor(modifier, backAction)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RichTextEditor(modifier: Modifier = Modifier, backAction: () -> Unit) {
