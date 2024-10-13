@@ -1,20 +1,18 @@
 package com.loong.android.event
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.loong.android.event.ui.EventApp
-import com.loong.android.event.ui.theme.EventTheme
+import androidx.appcompat.app.AppCompatActivity
+import com.loong.android.event.databinding.ActivityMainBinding
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            EventTheme {
-                EventApp()
-            }
-        }
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }
