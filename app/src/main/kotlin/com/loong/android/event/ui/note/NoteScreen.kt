@@ -38,21 +38,35 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun NoteScreen(modifier: Modifier = Modifier, backAction: () -> Unit) {
-    RichTextEditor(modifier, backAction)
+fun NoteScreen(
+    modifier: Modifier = Modifier,
+    id: String? = null,
+    vm: NoteViewModel = viewModel(),
+    backAction: () -> Unit
+) {
+    if (id != null) {
+        vm.openNote(id)
+    }
+    RichTextEditor(modifier, backAction) {
+        vm.updateNote(it)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RichTextEditor(modifier: Modifier = Modifier, backAction: () -> Unit) {
+fun RichTextEditor(
+    modifier: Modifier = Modifier,
+    backAction: () -> Unit,
+    saveCallback: (String) -> Unit
+) {
     var text by remember { mutableStateOf(TextFieldValue(AnnotatedString(""))) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -124,6 +138,9 @@ fun RichTextEditor(modifier: Modifier = Modifier, backAction: () -> Unit) {
                     .fillMaxHeight()
                     .onFocusChanged { focusState ->
                         isFocused = focusState.isFocused
+                        if (!isFocused) {
+                            saveCallback(text.text)
+                        }
                     },
                 textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
                 decorationBox = { innerTextField ->
@@ -143,10 +160,4 @@ fun RichTextEditor(modifier: Modifier = Modifier, backAction: () -> Unit) {
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun RichTextEditorPreview() {
-    RichTextEditor {}
 }
