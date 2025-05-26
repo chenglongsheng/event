@@ -1,33 +1,69 @@
 package com.loong.android.event.ui.calendar
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.loong.android.event.ui.Route
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Column {
-        Row {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "")
+fun CalendarScreen(navController: NavController) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                { navController.navigate(Route.Note) },
+                Modifier,
+                RoundedCornerShape(50)
+            ) {
+                Icon(Icons.Default.Add, "Add Note")
             }
         }
-        Calendar {
+    ) {
+        Column(
+            modifier = Modifier.padding(it),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row {
+                IconButton({ navController.navigate(Route.Notebook) }) {
+                    Icon(Icons.Default.Book, "Note book")
+                }
+                IconButton({ navController.navigate(Route.Tag) }) {
+                    Icon(Icons.Default.Sell, "Note tag")
+                }
+                IconButton({ navController.navigate(Route.Note) }) {
+                    Icon(Icons.Default.CalendarMonth, contentDescription = "")
+                }
+            }
+            val datePickerState =
+                rememberDatePickerState(initialSelectedDateMillis = 1578096000000)
+            DatePicker(state = datePickerState, modifier = Modifier.padding(16.dp))
+            Text(
+                "Selected date timestamp: ${datePickerState.selectedDateMillis ?: "no selection"}",
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Calendar {
 
+            }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun CalendarScreenPreview() {
-    CalendarScreen {
-
     }
 }

@@ -44,18 +44,19 @@ import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
 fun NoteScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     id: String? = null,
-    vm: NoteViewModel = viewModel(),
-    backAction: () -> Unit
+    vm: NoteViewModel = viewModel()
 ) {
     if (id != null) {
         vm.openNote(id)
     }
-    RichTextEditor(modifier, backAction) {
+    RichTextEditor(modifier, { navController.navigateUp() }) {
         vm.updateNote(it)
     }
 }
